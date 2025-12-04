@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  phone           String   @unique
+  passwordHash    String
+  role            UserRole @default(VOTER)
+  isVerified      Boolean  @default(false) // Admin approval
+  isPhoneVerified Boolean  @default(false) // OTP verification
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  candidates      Candidate[]
+  votes           Vote[]        @relation("UserVotes")
+}
+
+enum UserRole {
+  VOTER
+  CANDIDATE
+  ADMIN
+}
+
+model OtpCode {
+  id        String   @id @default(uuid())
+  phone     String
+  code      String
+  type      OtpType
+  isUsed    Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+enum OtpType {
+  REGISTRATION
+  LOGIN
+}
+
+model Election {
+  id                 String      @id @default(uuid())
+  name               String
+  description        String?
+  startDate          DateTime
+  endDate            DateTime
+  isActive           Boolean     @default(false)
+  isResultsPublished Boolean     @default(false)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  // Relations
+  candidates         Candidate[]
+  votes              Vote[]
+}
+
+model Candidate {
+  id         String          @id @default(uuid())
+  userId     String
+  electionId String
+  party      String
+  status     CandidateStatus @default(PENDING)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  // Relations
+  user       User            @relation(fields: [userId], references: [id])
+  election   Election        @relation(fields: [electionId], references: [id])
+  votes      Vote[]
+
+  @@unique([userId, electionId])
+}
+
+model Vote {
+  id         String   @id @default(uuid())
+  voterId    String
+  electionId String
+  candidateId String
+  createdAt  DateTime @default(now())
+
+  voter      User      @relation("UserVotes", fields: [voterId], references: [id])
+  election   Election  @relation(fields: [electionId], references: [id])
+  candidate  Candidate @relation(fields: [candidateId], references: [id])
+
+  @@unique([voterId, electionId])
+}
+
+enum CandidateStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+

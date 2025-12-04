@@ -1,0 +1,26 @@
+# Backend Dependencies
+# Install using: npm install
+
+# Production Dependencies
+@prisma/client==^6.0.0
+bcryptjs==^2.4.3
+cors==^2.8.5
+date-fns==^3.6.0
+dotenv==^16.4.5
+express==^4.21.2
+jsonwebtoken==^9.0.2
+twilio==^5.4.1
+
+# Development Dependencies
+@types/bcryptjs==^2.4.2
+@types/cors==^2.8.17
+@types/express==^4.17.21
+@types/jsonwebtoken==^9.0.6
+@types/node==^22.16.5
+prisma==^6.0.0
+ts-node-dev==^2.0.0
+typescript==^5.8.3
+
+# Node.js Version Required: >= 18.0.0
+# MySQL Version Required: >= 8.0.0
+
