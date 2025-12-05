@@ -84,6 +84,7 @@ export const authApi = {
     phone: string;
     password: string;
     role: 'VOTER' | 'CANDIDATE';
+    dateOfBirth: string;
   }) => {
     return apiRequest<{ user: any; message: string }>('/auth/register', {
       method: 'POST',

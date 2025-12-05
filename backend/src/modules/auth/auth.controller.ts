@@ -3,8 +3,8 @@ import * as authService from './auth.service';
 
 export async function register(req: Request, res: Response, next: NextFunction) {
   try {
-    const { name, email, phone, password, role } = req.body;
-    const user = await authService.register({ name, email, phone, password, role });
+    const { name, email, phone, password, role, dateOfBirth } = req.body;
+    const user = await authService.register({ name, email, phone, password, role, dateOfBirth });
     res.status(201).json({ message: 'Registered successfully. OTP sent to phone.', user });
   } catch (err) {
     next(err);

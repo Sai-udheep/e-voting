@@ -7,12 +7,13 @@ export interface User {
   phone: string;
   role: UserRole;
   isVerified: boolean;
+  dateOfBirth: string;
   votedElections?: string[]; // Array of election IDs user has voted in
   isNominated?: boolean;
 }
 
 export interface Voter extends User {
-  age: number;
+  age?: number;
   address: string;
   idProof?: string;
 }
@@ -49,6 +50,7 @@ export interface AuthContextType {
     phone: string;
     password: string;
     role?: UserRole;
+    dateOfBirth?: string;
   }) => Promise<boolean>;
   verifyOtp?: (phone: string, code: string) => Promise<boolean>;
 }

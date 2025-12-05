@@ -77,29 +77,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Test Credentials */}
-      <section className="container mx-auto px-4 py-12">
-        <Card className="max-w-3xl mx-auto p-8 bg-muted/50">
-          <h2 className="text-2xl font-bold mb-6 text-center">Test Credentials</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <h3 className="font-semibold text-primary">Voter</h3>
-              <p className="text-sm">Phone: 9876543210</p>
-              <p className="text-sm">Password: voter123</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-primary">Candidate</h3>
-              <p className="text-sm">Phone: 9876543211</p>
-              <p className="text-sm">Password: candidate123</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-primary">Admin</h3>
-              <p className="text-sm">Phone: 9876543212</p>
-              <p className="text-sm">Password: admin123</p>
-            </div>
-          </div>
-        </Card>
-      </section>
     </div>
   );
 }

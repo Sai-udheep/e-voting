@@ -1,12 +1,50 @@
+import { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Vote, BarChart3, FileText, TrendingUp } from 'lucide-react';
+import { Vote, BarChart3, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useElection } from '@/contexts/ElectionContext';
+import { voteApi } from '@/lib/api';
 
 export default function VoterDashboard() {
   const { user } = useAuth();
+  const { selectedElection, elections } = useElection();
+  const [hasVotedMessage, setHasVotedMessage] = useState<string>('Checking your voting status...');
+  const activeElection = selectedElection || elections.find((e) => e.isActive);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkStatus = async () => {
+      if (!activeElection) {
+        if (isMounted) setHasVotedMessage('No active election available right now.');
+        return;
+      }
+
+      try {
+        const result = await voteApi.hasVoted(activeElection.id);
+        if (!isMounted) return;
+        if (result.hasVoted) {
+          setHasVotedMessage(`You just voted in "${activeElection.name}". Thank you for participating!`);
+        } else {
+          setHasVotedMessage(`You haven't voted yet in "${activeElection.name}". Cast your vote now.`);
+        }
+      } catch (error) {
+        console.error('Failed to check voting status', error);
+        if (isMounted) {
+          setHasVotedMessage('Unable to fetch your voting status right now.');
+        }
+      }
+    };
+
+    checkStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeElection]);
 
   const dashboardCards = [
     {
@@ -53,16 +91,7 @@ export default function VoterDashboard() {
             <TrendingUp className="h-6 w-6 text-primary mt-1" />
             <div>
               <h3 className="font-bold mb-2">Your Voting Status</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                {user?.votedElections && user.votedElections.length > 0
-                  ? `You have voted in ${user.votedElections.length} election(s). Thank you for participating!` 
-                  : 'You have not voted yet. Make your voice heard today!'}
-              </p>
-              {user?.isNominated && (
-                <p className="text-sm text-primary font-medium">
-                  ✓ Your nomination is currently under review
-                </p>
-              )}
+              <p className="text-sm text-muted-foreground mb-3">{hasVotedMessage}</p>
             </div>
           </div>
         </Card>

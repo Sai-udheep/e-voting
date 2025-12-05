@@ -19,7 +19,7 @@ export default function Register() {
     phone: '',
     password: '',
     role: 'voter' as UserRole,
-    age: '',
+    dateOfBirth: '',
     address: '',
   });
   const [otp, setOtp] = useState('');
@@ -38,8 +38,23 @@ export default function Register() {
     
     try {
       // Validate required fields
-      if (!formData.name || !formData.email || !formData.phone || !formData.password) {
+      if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.dateOfBirth) {
         toast.error('Please fill in all required fields');
+        setIsLoading(false);
+        return;
+      }
+
+      // Frontend age check (must be 18+)
+      const dob = new Date(formData.dateOfBirth);
+      if (isNaN(dob.getTime())) {
+        toast.error('Please enter a valid date of birth');
+        setIsLoading(false);
+        return;
+      }
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear() - (today < new Date(today.getFullYear(), dob.getMonth(), dob.getDate()) ? 1 : 0);
+      if (age < 18) {
+        toast.error('You must be at least 18 years old to register');
         setIsLoading(false);
         return;
       }
@@ -50,6 +65,7 @@ export default function Register() {
         phone: formData.phone,
         password: formData.password,
         role: formData.role,
+        dateOfBirth: formData.dateOfBirth,
       });
 
       if (success) {
@@ -115,6 +131,19 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                <Input
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="email">Email Address *</Label>
                 <Input
                   id="email"
@@ -173,18 +202,6 @@ export default function Register() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="age">Age</Label>
-                <Input
-                  id="age"
-                  name="age"
-                  type="number"
-                  placeholder="18"
-                  value={formData.age}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-              </div>
             </div>
 
             <div className="space-y-2">

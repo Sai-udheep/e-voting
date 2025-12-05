@@ -26,7 +26,29 @@ export async function register(data: {
   phone: string;
   password: string;
   role: 'VOTER' | 'CANDIDATE';
+  dateOfBirth: string;
 }) {
+  // Validate dateOfBirth and age >= 18
+  if (!data.dateOfBirth) {
+    const error: any = new Error('Date of birth is required');
+    error.status = 400;
+    throw error;
+  }
+
+  const dob = new Date(data.dateOfBirth);
+  if (isNaN(dob.getTime())) {
+    const error: any = new Error('Invalid date of birth');
+    error.status = 400;
+    throw error;
+  }
+
+  const today = new Date();
+  const age = today.getFullYear() - dob.getFullYear() - (today < new Date(today.getFullYear(), dob.getMonth(), dob.getDate()) ? 1 : 0);
+  if (age < 18) {
+    const error: any = new Error('You must be at least 18 years old to register');
+    error.status = 400;
+    throw error;
+  }
   // Normalize phone number before checking/creating
   const normalizedPhone = normalizePhone(data.phone);
   
@@ -55,7 +77,8 @@ export async function register(data: {
         passwordHash,
         role: data.role,
         isVerified: false,
-        isPhoneVerified: false
+        isPhoneVerified: false,
+        dateOfBirth: dob
       }
     });
 
@@ -81,7 +104,8 @@ export async function register(data: {
       passwordHash,
       role: data.role,
       isVerified: false,
-      isPhoneVerified: false
+      isPhoneVerified: false,
+      dateOfBirth: dob
     }
   });
 
@@ -92,7 +116,8 @@ export async function register(data: {
     name: user.name,
     email: user.email,
     phone: user.phone,
-    role: user.role
+    role: user.role,
+    dateOfBirth: user.dateOfBirth
   };
 }
 
@@ -185,7 +210,8 @@ export async function login(phone: string, password: string) {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      role: user.role
+      role: user.role,
+      dateOfBirth: user.dateOfBirth
     }
   };
 }

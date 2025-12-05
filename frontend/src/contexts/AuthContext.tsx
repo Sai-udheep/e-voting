@@ -93,6 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     phone: string;
     password: string;
     role?: UserRole;
+    dateOfBirth: string;
   }): Promise<boolean> => {
     try {
       const role = data.role || 'voter';
@@ -104,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         phone: data.phone,
         password: data.password,
         role: backendRole,
+        dateOfBirth: data.dateOfBirth,
       });
 
       toast.success('Registration successful! OTP sent to your phone.');

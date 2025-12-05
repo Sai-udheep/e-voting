@@ -7,7 +7,7 @@ A secure, full-stack electronic voting system built with **React**, **TypeScript
 ## 🎯 Features
 
 ### User Management
-- **User Registration** with email, phone, and password
+- **User Registration** with email, phone, password, and date of birth (age ≥ 18)
 - **Phone Verification** via OTP (Twilio SMS integration)
 - **Admin Approval** workflow for new users
 - **JWT-based Authentication** with role-based access control

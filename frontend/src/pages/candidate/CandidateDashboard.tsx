@@ -1,12 +1,38 @@
+import { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Vote, FileText, BarChart3, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { candidateApi } from '@/lib/api';
 
 export default function CandidateDashboard() {
   const { user } = useAuth();
+  const [nominations, setNominations] = useState<any[]>([]);
+  const [loadingNominations, setLoadingNominations] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadNominations = async () => {
+      try {
+        setLoadingNominations(true);
+        const data = await candidateApi.getMyNominations();
+        if (!isMounted) return;
+        setNominations(data || []);
+      } catch (error) {
+        console.error('Failed to load nominations', error);
+        if (isMounted) setNominations([]);
+      } finally {
+        if (isMounted) setLoadingNominations(false);
+      }
+    };
+
+    loadNominations();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const dashboardCards = [
     {
@@ -60,16 +86,26 @@ export default function CandidateDashboard() {
             <TrendingUp className="h-6 w-6 text-primary mt-1" />
             <div>
               <h3 className="font-bold mb-2">Nomination Status</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                {user?.isNominated 
-                  ? 'Your nomination has been approved. You are an active candidate!' 
-                  : 'Submit your nomination to participate in the election.'}
-              </p>
-              {user?.isNominated && (
-                <p className="text-sm text-primary font-medium">
-                  ✓ Active Candidate Status
-                </p>
-              )}
+              <div className="text-sm text-muted-foreground mb-3 space-y-2">
+                {loadingNominations && <p>Checking your nominations...</p>}
+                {!loadingNominations && nominations.length === 0 && (
+                  <p>No nominations submitted yet. Submit your nomination to participate.</p>
+                )}
+                {!loadingNominations && nominations.length > 0 && (
+                  <div className="space-y-2">
+                    {nominations.map((nomination) => (
+                      <div key={nomination.id} className="p-3 rounded-md bg-white/50 text-foreground shadow-sm">
+                        <p className="font-semibold">
+                          {nomination.election?.name ?? 'Election'} — {nomination.party ?? 'Party'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Status: {nomination.status ?? 'PENDING'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </Card>

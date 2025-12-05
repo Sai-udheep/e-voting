@@ -16,6 +16,7 @@ model User {
   role            UserRole @default(VOTER)
   isVerified      Boolean  @default(false) // Admin approval
   isPhoneVerified Boolean  @default(false) // OTP verification
+  dateOfBirth     DateTime
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
